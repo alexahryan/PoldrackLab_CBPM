@@ -13,6 +13,6 @@ The atlas label file: tpl-MNI152NLin2009cAsym_res-01_atlas-smorgasbord_dseg.nii.
 <br>
 The information about the parcels: tpl-MNI152NLin2009cAsym_res-01_atlas-smorgasbord_dseg.tsv
 <br>
-The code to perform connectome-based predictive modeling: cbpm_tutorial.ipynb
+The code to perform connectome-based predictive modeling: CBPM_tutorial.ipynb
 <br>
 *The code for cbpm_tutorial.ipynb was adapted from [cpm_tutorial](https://github.com/esfinn/cpm_tutorial), which was prepared for the Georgetown Methods Lab.*
