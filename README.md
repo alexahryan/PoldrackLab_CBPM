@@ -7,7 +7,7 @@ Next, the functional connectivity matrices can be inputted to the code for conne
 <br>
 **Directory Contents**
 <br>
-The code to perform functional connectivity on preprocessed scans: fc.ipynb
+The code to perform functional connectivity on preprocessed scans: functional_connectivity.py
 <br>
 The atlas label file: tpl-MNI152NLin2009cAsym_res-01_atlas-smorgasbord_dseg.nii.gz
 <br>
