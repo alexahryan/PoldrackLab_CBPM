@@ -5,12 +5,8 @@ from nilearn import input_data, connectome
 from nilearn import image as nimg
 from nilearn import plotting as nplot
 import nibabel as nib
+import bids
 
-def get_timeseries(masker, img_path, confound_df):
-    # parcellate timeseries
-    parcellated_timeseries = masker.fit_transform(img_path, confounds=confound_df)
-    
-    return parcellated_timeseries
 
 # Set the paths to the fMRI data and parcellation file
 fmri_data_path = "path_to_fmri_data.nii.gz"
