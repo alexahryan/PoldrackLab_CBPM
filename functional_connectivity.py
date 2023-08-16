@@ -2,18 +2,46 @@ import os
 import numpy as np
 import pandas as pd
 from nilearn import input_data, connectome
+from nilearn.connectome import ConnectivityMeasure
 from nilearn import image as nimg
 from nilearn import plotting as nplot
 import nibabel as nib
 import bids
 
+def get_confounds(confound_tsv,confounds,dt=True):
+    '''
 
-# Set the paths to the fMRI data and parcellation file
-fmri_data_path = "path_to_fmri_data.nii.gz"
+    Parameters
+    ----------
+    confound_tsv : path to confounds.tsv
+        
+    confounds : list of confounder variables to be extracted
+        
+    dt : compute temporal derivatives. The default is True.
+
+    Returns
+    -------
+    confound_mat : matrix of confounds
+
+    '''
+    if dt:
+        dt_names = ['{}_derivative1'.format(c) for c in confounds]
+        confounds = confounds + dt_names
+    
+    confound_df = pd.read_csv(confound_tsv,delimiter='/t')
+    confound_df = counfound_df[confounds]
+    confound_mat = confound_df.values
+    
+    return confound_mat
+
+
+# Set the paths to the fMRI data, parcellation file, and output directory
+#fmri_data_path = "path_to_fmri_data.nii.gz"
 layout = bids.BIDSLayout(fmri_data_path,validate=False,
                         config=['bids','derivatives'])
-parcellation_path = "path_to_parcellation.nii.gz"
-sub = 'subject' #Specify subject
+#parcellation_path = "path_to_parcellation.nii.gz"
+#output_path = "path_to_save_fc_matrix.csv"
+#sub = 'subject' #Specify subject
 
 #Get the different files
 func_files = layout.get(subject=sub,
@@ -41,31 +69,18 @@ func_file = func_files[0]
 mask_file = mask_files[0]
 confound_file = confound_files[0]
 
-#Set up confound df
-confound_df = pd.read_csv(confound_file, delimiter='\t')
-confound_df.head()
+# Load functional image and remove dummy trs
+raw_func_img = nimg.load_img(func_file)
+tr_drop = 4
+func_img = raw_func_img.slicer[:,:,:,tr_drop:]
 
-# Select and set up confounds
+# Extract confounds
 confound_vars = ['trans_x','trans_y','trans_z',
                  'rot_x','rot_y','rot_z',
                  'global_signal',
                  'csf', 'white_matter']
-
-derivative_columns = ['{}_derivative1'.format(c) for c
-                     in confound_vars]
-
-final_confounds = confound_vars + derivative_columns
-confound_df = confound_df[final_confounds]
-confound_df.head()
-
-#Drop dummy TRs
-raw_func_img = nimg.load_img(func_file)
-func_img = raw_func_img.slicer[:,:,:,4:]
-
-#Drop confound dummy TRs
-drop_confound_df = confound_df.loc[4:]
-drop_confound_df.head()
-
+confounds = get_confounds(confound_file, confound_vars)
+confounds = confounds[tr_drop:,:]
 
 # Set the high-pass and low-pass filter cutoffs (in seconds)
 high_pass = 0.042  # Example: 0.01 Hz
@@ -75,9 +90,6 @@ low_pass = 0.125   # Example: 0.1 Hz
 smoothing_fwhm = 6  # Smoothing FWHM value in mm
 detrend = False      # Whether to detrend the time series signals
 standardize = True  # Whether to z-score the time series signals
-
-# Set the output path for the functional connectivity matrix
-output_path = "path_to_save_fc_matrix.csv"
 
 # Load the parcellation file
 parcellation_img = input_data.parcellations.load_parcellation(parcellation_path)
@@ -92,12 +104,12 @@ masker = input_data.NiftiLabelsMasker(labels_img=parcellation_img,
 
 
 # Apply the masker to extract  time series signals from the fMRI data
-time_series = masker.fit_transform(func_img, confounds=final_confounds)
+time_series = masker.fit_transform(func_img, confounds=confounds)
 
 
 # Calculate the functional connectivity matrix
-correlation_measure = connectome.ConnectivityMeasure(kind='correlation')
-functional_connectivity = correlation_measure.fit_transform([time_series])[0]
+correlation_measure = ConnectivityMeasure(kind='correlation')
+functional_connectivity = correlation_measure.fit_transform([time_series])
 
 # Convert the functional connectivity matrix to a pandas DataFrame
 fc_matrix = pd.DataFrame(functional_connectivity)
