@@ -8,8 +8,8 @@ from nilearn import input_data, connectome
 from nilearn.connectome import ConnectivityMeasure
 from nilearn import image as nimg
 import nibabel as nib
-import bids
-from bids import BIDSLayout
+#import bids
+#from bids import BIDSLayout
 import os.path as op
 from glob import glob
 
