@@ -13,6 +13,8 @@ The atlas label file: shen_2mm_268_parcellation_adwarpMNI2009.nii.gz
 <br>
 The information about the parcels: shen268_coords.csv
 <br>
-The code to perform connectome-based predictive modeling: CBPM_tutorial.ipynb
+The code to perform connectome-based predictive modeling: CBPM.py
+<br>
+The code initially adapted for the tutorial linked below, providing starting point for implementing analysis: CBPM_tutorial.ipynb
 <br>
 *The code for cbpm_tutorial.ipynb was adapted from [cpm_tutorial](https://github.com/esfinn/cpm_tutorial), which was prepared for the Georgetown Methods Lab.*
